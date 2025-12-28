@@ -1,0 +1,43 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# Compiled executables and objects
+*.exe
+*.obj
+*.o
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+
+# IDE and editor files
+.vs/
+.vscode/settings.json
+.idea/
+*.user
+*.suo
+*.sln.docstates
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.swp
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Keep the miniaudio header (it's large but needed)
+# !include/miniaudio.h
