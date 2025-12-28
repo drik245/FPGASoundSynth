@@ -17,7 +17,8 @@ class FPGASynth {
                 sine: 1.0,
                 triangle: 0.0,
                 sawtooth: 0.0,
-                square: 0.0
+                square: 0.0,
+                noise: 0.0
             },
             filter: {
                 cutoff: 2000,
@@ -242,37 +243,52 @@ class FPGASynth {
     setupPresets() {
         const presets = {
             init: {
-                waveMix: { sine: 1.0, triangle: 0, sawtooth: 0, square: 0 },
+                waveMix: { sine: 1.0, triangle: 0, sawtooth: 0, square: 0, noise: 0 },
                 filter: { cutoff: 2000, resonance: 1 },
                 envelope: { attack: 0.01, decay: 0.1, sustain: 0.7, release: 0.3 }
             },
             bass: {
-                waveMix: { sine: 0.3, triangle: 0, sawtooth: 0.7, square: 0 },
+                waveMix: { sine: 0.3, triangle: 0, sawtooth: 0.7, square: 0, noise: 0 },
                 filter: { cutoff: 400, resonance: 5 },
                 envelope: { attack: 0.01, decay: 0.3, sustain: 0.8, release: 0.2 }
             },
             lead: {
-                waveMix: { sine: 0, triangle: 0, sawtooth: 0.6, square: 0.4 },
+                waveMix: { sine: 0, triangle: 0, sawtooth: 0.6, square: 0.4, noise: 0 },
                 filter: { cutoff: 3000, resonance: 3 },
                 envelope: { attack: 0.01, decay: 0.1, sustain: 0.6, release: 0.4 }
             },
             pad: {
-                waveMix: { sine: 0.5, triangle: 0.5, sawtooth: 0, square: 0 },
+                waveMix: { sine: 0.5, triangle: 0.5, sawtooth: 0, square: 0, noise: 0 },
                 filter: { cutoff: 1500, resonance: 1 },
                 envelope: { attack: 0.5, decay: 0.3, sustain: 0.8, release: 1.0 }
             },
+            pluck: {
+                waveMix: { sine: 0, triangle: 0.3, sawtooth: 0.7, square: 0, noise: 0 },
+                filter: { cutoff: 5000, resonance: 3 },
+                envelope: { attack: 0.001, decay: 0.3, sustain: 0, release: 0.2 }
+            },
+            strings: {
+                waveMix: { sine: 0, triangle: 0, sawtooth: 1.0, square: 0, noise: 0 },
+                filter: { cutoff: 2500, resonance: 2 },
+                envelope: { attack: 0.3, decay: 0.2, sustain: 0.7, release: 0.5 }
+            },
+            fmbell: {
+                waveMix: { sine: 1.0, triangle: 0, sawtooth: 0, square: 0, noise: 0 },
+                filter: { cutoff: 8000, resonance: 1 },
+                envelope: { attack: 0.001, decay: 1.5, sustain: 0, release: 1.0 }
+            },
             kick: {
-                waveMix: { sine: 1.0, triangle: 0, sawtooth: 0, square: 0 },
+                waveMix: { sine: 1.0, triangle: 0, sawtooth: 0, square: 0, noise: 0 },
                 filter: { cutoff: 200, resonance: 8 },
                 envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 }
             },
             snare: {
-                waveMix: { sine: 0.3, triangle: 0.3, sawtooth: 0.2, square: 0.2 },
+                waveMix: { sine: 0.3, triangle: 0.2, sawtooth: 0.2, square: 0, noise: 0.3 },
                 filter: { cutoff: 5000, resonance: 2 },
                 envelope: { attack: 0.001, decay: 0.15, sustain: 0.1, release: 0.15 }
             },
             hihat: {
-                waveMix: { sine: 0, triangle: 0, sawtooth: 0.5, square: 0.5 },
+                waveMix: { sine: 0, triangle: 0, sawtooth: 0.3, square: 0.3, noise: 0.4 },
                 filter: { cutoff: 10000, resonance: 1 },
                 envelope: { attack: 0.001, decay: 0.05, sustain: 0, release: 0.05 }
             }
@@ -391,6 +407,32 @@ class FPGASynth {
         // Create oscillators for each wave type with mix level
         Object.entries(this.params.waveMix).forEach(([type, level]) => {
             if (level <= 0) return;
+
+            // Handle noise separately (it's not a standard oscillator type)
+            if (type === 'noise') {
+                // Create noise using a buffer source
+                const bufferSize = this.audioContext.sampleRate * 2;
+                const noiseBuffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                const noiseSource = this.audioContext.createBufferSource();
+                noiseSource.buffer = noiseBuffer;
+                noiseSource.loop = true;
+
+                const gain = this.audioContext.createGain();
+                gain.gain.value = level / totalMix;
+
+                noiseSource.connect(gain);
+                gain.connect(oscGain);
+                noiseSource.start();
+
+                oscillators.push(noiseSource);
+                gains.push(gain);
+                return;
+            }
 
             const osc = this.audioContext.createOscillator();
             osc.type = type;

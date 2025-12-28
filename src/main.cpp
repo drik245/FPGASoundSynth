@@ -19,10 +19,8 @@
 #include <iostream>
 #include <windows.h>
 
-
 #include "core/presets.hpp"
 #include "engine/synth_engine.hpp"
-
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "../include/miniaudio.h"
@@ -165,7 +163,7 @@ void printUI() {
   std::cout
       << "  |---------------------------------------------------------|\n";
   std::cout
-      << "  |  PRESETS:  0-9 = Load preset                            |\n";
+      << "  |  PRESETS:  , . = Previous/Next preset                   |\n";
   std::cout
       << "  |                                                         |\n";
   std::cout
@@ -260,29 +258,49 @@ int main() {
         continue;
       }
 
-      // Preset selection (0-9)
-      if (key >= '0' && key <= '9') {
-        int presetNum = key - '0';
-        if (presetNum < PresetBank::NUM_PRESETS) {
-          g_synth.loadPreset(presetNum);
-          // Update local variables from preset
-          SynthPreset p = PresetBank::getPreset(presetNum);
-          g_sineMix = p.waveMix.sine;
-          g_triMix = p.waveMix.triangle;
-          g_sawMix = p.waveMix.sawtooth;
-          g_sqrMix = p.waveMix.square;
-          g_noiseMix = p.waveMix.noise;
-          g_filterCutoff = p.filterCutoff;
-          g_filterRes = p.filterResonance;
-          g_attack = p.ampAttack;
-          g_decay = p.ampDecay;
-          g_sustain = p.ampSustain;
-          g_release = p.ampRelease;
-          printUI();
-          snprintf(statusMsg, sizeof(statusMsg), "Loaded preset: %s",
-                   p.name.c_str());
-          updateDisplay(statusMsg);
-        }
+      // Preset selection (comma = previous, period = next)
+      if (key == ',' || key == '<') {
+        int presetNum = g_synth.getCurrentPreset();
+        presetNum =
+            (presetNum > 0) ? presetNum - 1 : PresetBank::NUM_PRESETS - 1;
+        g_synth.loadPreset(presetNum);
+        SynthPreset p = PresetBank::getPreset(presetNum);
+        g_sineMix = p.waveMix.sine;
+        g_triMix = p.waveMix.triangle;
+        g_sawMix = p.waveMix.sawtooth;
+        g_sqrMix = p.waveMix.square;
+        g_noiseMix = p.waveMix.noise;
+        g_filterCutoff = p.filterCutoff;
+        g_filterRes = p.filterResonance;
+        g_attack = p.ampAttack;
+        g_decay = p.ampDecay;
+        g_sustain = p.ampSustain;
+        g_release = p.ampRelease;
+        printUI();
+        snprintf(statusMsg, sizeof(statusMsg), "Preset: %s", p.name.c_str());
+        updateDisplay(statusMsg);
+        continue;
+      }
+      if (key == '.' || key == '>') {
+        int presetNum = g_synth.getCurrentPreset();
+        presetNum =
+            (presetNum < PresetBank::NUM_PRESETS - 1) ? presetNum + 1 : 0;
+        g_synth.loadPreset(presetNum);
+        SynthPreset p = PresetBank::getPreset(presetNum);
+        g_sineMix = p.waveMix.sine;
+        g_triMix = p.waveMix.triangle;
+        g_sawMix = p.waveMix.sawtooth;
+        g_sqrMix = p.waveMix.square;
+        g_noiseMix = p.waveMix.noise;
+        g_filterCutoff = p.filterCutoff;
+        g_filterRes = p.filterResonance;
+        g_attack = p.ampAttack;
+        g_decay = p.ampDecay;
+        g_sustain = p.ampSustain;
+        g_release = p.ampRelease;
+        printUI();
+        snprintf(statusMsg, sizeof(statusMsg), "Preset: %s", p.name.c_str());
+        updateDisplay(statusMsg);
         continue;
       }
 

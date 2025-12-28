@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FPGA Sound Synth | Korg Minilogue XD Clone</title>
-    <meta name="description" content="An FPGA-based synthesizer inspired by the Korg Minilogue XD. 24-bit / 192kHz audio with real-time waveform synthesis, filters, and effects.">
+    <meta name="description"
+        content="An FPGA-based synthesizer inspired by the Korg Minilogue XD. 24-bit / 192kHz audio with real-time waveform synthesis, filters, and effects.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- Animated Background -->
     <div class="bg-animation">
@@ -29,7 +34,8 @@
             <a href="#demo">Demo</a>
             <a href="https://github.com/drik245/FPGASoundSynth" target="_blank" class="github-link">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    <path
+                        d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
                 </svg>
                 GitHub
             </a>
@@ -45,7 +51,7 @@
             </h1>
             <p class="hero-subtitle">Korg Minilogue XD Clone</p>
             <p class="hero-description">
-                A high-fidelity synthesizer running at <span class="highlight">24-bit / 192kHz</span> with 
+                A high-fidelity synthesizer running at <span class="highlight">24-bit / 192kHz</span> with
                 real-time waveform generation, analog-modeled filters, and studio-quality effects.
             </p>
             <div class="hero-stats">
@@ -65,7 +71,7 @@
             <a href="#demo" class="cta-button">
                 <span>Try Live Demo</span>
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                    <path d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
             </a>
         </div>
@@ -114,8 +120,9 @@
     <!-- Demo Section -->
     <section class="demo" id="demo">
         <h2 class="section-title">Interactive Demo</h2>
-        <p class="demo-subtitle">Click on the keyboard or use your QWERTY keys to play. Mix waves to create unique sounds!</p>
-        
+        <p class="demo-subtitle">Click on the keyboard or use your QWERTY keys to play. Mix waves to create unique
+            sounds!</p>
+
         <div class="synth-container">
             <!-- Waveform Display -->
             <div class="waveform-section">
@@ -128,7 +135,7 @@
             <!-- Oscillator Mixer -->
             <div class="control-section">
                 <h3 class="section-header">OSCILLATOR MIXER</h3>
-                <div class="mixer-grid">
+                <div class="mixer-grid mixer-grid-5">
                     <div class="mixer-channel">
                         <div class="knob-container">
                             <div class="knob" id="knobSine" data-wave="sine" data-value="100">
@@ -136,8 +143,8 @@
                                     <div class="knob-indicator"></div>
                                 </div>
                                 <svg class="knob-ring" viewBox="0 0 100 100">
-                                    <circle class="knob-track" cx="50" cy="50" r="45"/>
-                                    <circle class="knob-progress" cx="50" cy="50" r="45"/>
+                                    <circle class="knob-track" cx="50" cy="50" r="45" />
+                                    <circle class="knob-progress" cx="50" cy="50" r="45" />
                                 </svg>
                             </div>
                             <span class="knob-value">100%</span>
@@ -152,8 +159,8 @@
                                     <div class="knob-indicator"></div>
                                 </div>
                                 <svg class="knob-ring" viewBox="0 0 100 100">
-                                    <circle class="knob-track" cx="50" cy="50" r="45"/>
-                                    <circle class="knob-progress" cx="50" cy="50" r="45"/>
+                                    <circle class="knob-track" cx="50" cy="50" r="45" />
+                                    <circle class="knob-progress" cx="50" cy="50" r="45" />
                                 </svg>
                             </div>
                             <span class="knob-value">0%</span>
@@ -168,8 +175,8 @@
                                     <div class="knob-indicator"></div>
                                 </div>
                                 <svg class="knob-ring" viewBox="0 0 100 100">
-                                    <circle class="knob-track" cx="50" cy="50" r="45"/>
-                                    <circle class="knob-progress" cx="50" cy="50" r="45"/>
+                                    <circle class="knob-track" cx="50" cy="50" r="45" />
+                                    <circle class="knob-progress" cx="50" cy="50" r="45" />
                                 </svg>
                             </div>
                             <span class="knob-value">0%</span>
@@ -184,14 +191,30 @@
                                     <div class="knob-indicator"></div>
                                 </div>
                                 <svg class="knob-ring" viewBox="0 0 100 100">
-                                    <circle class="knob-track" cx="50" cy="50" r="45"/>
-                                    <circle class="knob-progress" cx="50" cy="50" r="45"/>
+                                    <circle class="knob-track" cx="50" cy="50" r="45" />
+                                    <circle class="knob-progress" cx="50" cy="50" r="45" />
                                 </svg>
                             </div>
                             <span class="knob-value">0%</span>
                         </div>
                         <div class="channel-label">SQUARE</div>
                         <div class="wave-icon square-icon"></div>
+                    </div>
+                    <div class="mixer-channel">
+                        <div class="knob-container">
+                            <div class="knob" id="knobNoise" data-wave="noise" data-value="0">
+                                <div class="knob-inner">
+                                    <div class="knob-indicator"></div>
+                                </div>
+                                <svg class="knob-ring" viewBox="0 0 100 100">
+                                    <circle class="knob-track" cx="50" cy="50" r="45" />
+                                    <circle class="knob-progress" cx="50" cy="50" r="45" />
+                                </svg>
+                            </div>
+                            <span class="knob-value">0%</span>
+                        </div>
+                        <div class="channel-label">NOISE</div>
+                        <div class="wave-icon noise-icon"></div>
                     </div>
                 </div>
             </div>
@@ -234,22 +257,26 @@
                     </div>
                     <div class="adsr-sliders">
                         <div class="adsr-slider">
-                            <input type="range" class="vertical-slider" id="attackSlider" min="0.001" max="2" step="0.001" value="0.01" orient="vertical">
+                            <input type="range" class="vertical-slider" id="attackSlider" min="0.001" max="2"
+                                step="0.001" value="0.01" orient="vertical">
                             <span class="adsr-value" id="attackValue">10ms</span>
                             <span class="adsr-label">A</span>
                         </div>
                         <div class="adsr-slider">
-                            <input type="range" class="vertical-slider" id="decaySlider" min="0.001" max="2" step="0.001" value="0.1" orient="vertical">
+                            <input type="range" class="vertical-slider" id="decaySlider" min="0.001" max="2"
+                                step="0.001" value="0.1" orient="vertical">
                             <span class="adsr-value" id="decayValue">100ms</span>
                             <span class="adsr-label">D</span>
                         </div>
                         <div class="adsr-slider">
-                            <input type="range" class="vertical-slider" id="sustainSlider" min="0" max="1" step="0.01" value="0.7" orient="vertical">
+                            <input type="range" class="vertical-slider" id="sustainSlider" min="0" max="1" step="0.01"
+                                value="0.7" orient="vertical">
                             <span class="adsr-value" id="sustainValue">70%</span>
                             <span class="adsr-label">S</span>
                         </div>
                         <div class="adsr-slider">
-                            <input type="range" class="vertical-slider" id="releaseSlider" min="0.001" max="3" step="0.001" value="0.3" orient="vertical">
+                            <input type="range" class="vertical-slider" id="releaseSlider" min="0.001" max="3"
+                                step="0.001" value="0.3" orient="vertical">
                             <span class="adsr-value" id="releaseValue">300ms</span>
                             <span class="adsr-label">R</span>
                         </div>
@@ -265,6 +292,9 @@
                     <button class="preset-btn" data-preset="bass">Bass</button>
                     <button class="preset-btn" data-preset="lead">Lead</button>
                     <button class="preset-btn" data-preset="pad">Pad</button>
+                    <button class="preset-btn" data-preset="pluck">Pluck</button>
+                    <button class="preset-btn" data-preset="strings">Strings</button>
+                    <button class="preset-btn" data-preset="fmbell">FM Bell</button>
                     <button class="preset-btn" data-preset="kick">Kick</button>
                     <button class="preset-btn" data-preset="snare">Snare</button>
                     <button class="preset-btn" data-preset="hihat">Hi-Hat</button>
@@ -292,7 +322,8 @@
                     <div class="key black" data-note="D#5"><span>0</span></div>
                     <div class="key white" data-note="E5"><span>P</span></div>
                 </div>
-                <div class="keyboard-hint">Use your keyboard to play: Q W E R T Y U I O P (white keys) | 2 3 5 6 7 9 0 (black keys)</div>
+                <div class="keyboard-hint">Use your keyboard to play: Q W E R T Y U I O P (white keys) | 2 3 5 6 7 9 0
+                    (black keys)</div>
             </div>
         </div>
     </section>
@@ -339,4 +370,5 @@
 
     <script src="synth.js"></script>
 </body>
+
 </html>
