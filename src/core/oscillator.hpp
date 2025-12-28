@@ -1,7 +1,7 @@
 #pragma once
 /**
- * oscillator.hpp
- * Band-limited oscillators with PolyBLEP anti-aliasing
+ * @file oscillator.hpp
+ * @brief Band-limited oscillators with PolyBLEP anti-aliasing
  *
  * Implements VCO1 and VCO2 from Minilogue XD:
  * - Saw, Triangle, Square waveforms
@@ -16,8 +16,8 @@
 namespace synth {
 
 /**
- * Oscillator
- * Band-limited oscillator with multiple waveforms
+ * @class Oscillator
+ * @brief Band-limited oscillator with multiple waveforms
  *
  * Uses PolyBLEP (Polynomial Band-Limited Step) for anti-aliasing.
  * This is efficient and maps well to FPGA implementation.
@@ -170,6 +170,186 @@ private:
     // White noise (LFSR would be better for FPGA)
     return noiseDist_(rng_);
   }
+};
+
+/**
+ * @struct WaveMix
+ * @brief Waveform mixing levels for blending multiple waves
+ */
+struct WaveMix {
+  Parameter sine = 0.0;
+  Parameter triangle = 0.0;
+  Parameter sawtooth = 1.0; // Default to saw
+  Parameter square = 0.0;
+  Parameter noise = 0.0;
+
+  // Normalize mix levels so they sum to 1.0
+  void normalize() {
+    Parameter total = sine + triangle + sawtooth + square + noise;
+    if (total > 0.0) {
+      sine /= total;
+      triangle /= total;
+      sawtooth /= total;
+      square /= total;
+      noise /= total;
+    }
+  }
+};
+
+/**
+ * @class MixingOscillator
+ * @brief Oscillator that blends multiple waveforms simultaneously
+ *
+ * Unlike the standard Oscillator which switches between waveforms,
+ * this generates all waveforms and mixes them according to WaveMix levels.
+ * Perfect for creating complex timbres and drum sounds.
+ */
+class MixingOscillator {
+public:
+  MixingOscillator()
+      : phase_(0.0), phaseIncrement_(0.0), pulseWidth_(0.5),
+        rng_(std::random_device{}()), noiseDist_(-1.0, 1.0) {
+    mix_.sawtooth = 1.0; // Default to pure saw
+  }
+
+  void setFrequency(Frequency freq) {
+    phaseIncrement_ = frequencyToPhaseIncrement(freq);
+  }
+
+  void setNote(int note) { setFrequency(midiToFrequency(note)); }
+
+  void setPulseWidth(Parameter pw) { pulseWidth_ = std::clamp(pw, 0.01, 0.99); }
+
+  void sync() { phase_ = 0.0; }
+
+  /**
+   * @brief Set individual waveform mix levels
+   */
+  void setSineMix(Parameter level) { mix_.sine = std::clamp(level, 0.0, 1.0); }
+  void setTriangleMix(Parameter level) {
+    mix_.triangle = std::clamp(level, 0.0, 1.0);
+  }
+  void setSawtoothMix(Parameter level) {
+    mix_.sawtooth = std::clamp(level, 0.0, 1.0);
+  }
+  void setSquareMix(Parameter level) {
+    mix_.square = std::clamp(level, 0.0, 1.0);
+  }
+  void setNoiseMix(Parameter level) {
+    mix_.noise = std::clamp(level, 0.0, 1.0);
+  }
+
+  /**
+   * @brief Set all mix levels at once
+   */
+  void setMix(const WaveMix &mix) { mix_ = mix; }
+  void setMix(Parameter sine, Parameter tri, Parameter saw, Parameter sqr,
+              Parameter noise = 0.0) {
+    mix_.sine = std::clamp(sine, 0.0, 1.0);
+    mix_.triangle = std::clamp(tri, 0.0, 1.0);
+    mix_.sawtooth = std::clamp(saw, 0.0, 1.0);
+    mix_.square = std::clamp(sqr, 0.0, 1.0);
+    mix_.noise = std::clamp(noise, 0.0, 1.0);
+  }
+
+  const WaveMix &getMix() const { return mix_; }
+
+  /**
+   * @brief Process one sample with waveform mixing
+   * @return Mixed output sample
+   */
+  Sample process() {
+    // Calculate total mix for normalization
+    Parameter totalMix =
+        mix_.sine + mix_.triangle + mix_.sawtooth + mix_.square + mix_.noise;
+    if (totalMix <= 0.0) {
+      advancePhase();
+      return 0.0;
+    }
+
+    Sample output = 0.0;
+
+    // Generate and mix all active waveforms
+    if (mix_.sine > 0.0) {
+      output += mix_.sine * processSine();
+    }
+    if (mix_.triangle > 0.0) {
+      output += mix_.triangle * processTriangle();
+    }
+    if (mix_.sawtooth > 0.0) {
+      output += mix_.sawtooth * processSaw();
+    }
+    if (mix_.square > 0.0) {
+      output += mix_.square * processSquare();
+    }
+    if (mix_.noise > 0.0) {
+      output += mix_.noise * processNoise();
+    }
+
+    // Normalize output
+    output /= totalMix;
+
+    advancePhase();
+    return output;
+  }
+
+  Phase getPhase() const { return phase_; }
+
+private:
+  Phase phase_;
+  Phase phaseIncrement_;
+  Parameter pulseWidth_;
+  WaveMix mix_;
+
+  std::mt19937 rng_;
+  std::uniform_real_distribution<double> noiseDist_;
+
+  void advancePhase() {
+    phase_ += phaseIncrement_;
+    if (phase_ >= 1.0) {
+      phase_ -= 1.0;
+    }
+  }
+
+  Sample polyBlep(Phase t) const {
+    Phase dt = phaseIncrement_;
+    if (dt <= 0.0)
+      return 0.0;
+
+    if (t < dt) {
+      t /= dt;
+      return t + t - t * t - 1.0;
+    } else if (t > 1.0 - dt) {
+      t = (t - 1.0) / dt;
+      return t * t + t + t + 1.0;
+    }
+    return 0.0;
+  }
+
+  Sample processSine() const { return std::sin(TWO_PI * phase_); }
+
+  Sample processSaw() const {
+    Sample saw = 2.0 * phase_ - 1.0;
+    saw -= polyBlep(phase_);
+    return saw;
+  }
+
+  Sample processTriangle() const {
+    if (phase_ < 0.5) {
+      return 4.0 * phase_ - 1.0;
+    } else {
+      return 3.0 - 4.0 * phase_;
+    }
+  }
+
+  Sample processSquare() const {
+    Sample square = (phase_ < pulseWidth_) ? 1.0 : -1.0;
+    square += polyBlep(phase_);
+    square -= polyBlep(std::fmod(phase_ + (1.0 - pulseWidth_), 1.0));
+    return square;
+  }
+
+  Sample processNoise() { return noiseDist_(rng_); }
 };
 
 /**
